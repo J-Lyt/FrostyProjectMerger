@@ -10,6 +10,8 @@ using FrostySdk;
 using FrostySdk.IO;
 using FrostySdk.Managers;
 using FrostySdk.Resources;
+using FrostySdk.Managers.Entries;
+using Frosty.Hash;
 
 namespace ProjectMerger
 {
@@ -263,7 +265,7 @@ namespace ProjectMerger
                                     entry.IsDirty = true;
                                 }
 
-                                int hash = Utils.HashString(entry.Name);
+                                int hash = Fnv1.HashString(entry.Name);
                                 if (!h32map.ContainsKey(hash))
                                     h32map.Add(hash, entry);
                             }
@@ -365,7 +367,7 @@ namespace ProjectMerger
                                     entry.OnModified();
                                 }
 
-                                int hash = Utils.HashString(entry.Name);
+                                int hash = Fnv1.HashString(entry.Name);
                                 if (!h32map.ContainsKey(hash))
                                     h32map.Add(hash, entry);
                             }
@@ -381,6 +383,7 @@ namespace ProjectMerger
                         {
                             Guid id = reader.ReadGuid();
                             List<int> bundles = new List<int>();
+                            List<int> superBundles = new List<int>();
 
                             if (version >= 13)
                             {
@@ -391,6 +394,20 @@ namespace ProjectMerger
                                     int bid = App.AssetManager.GetBundleId(bundleName);
                                     if (bid != -1)
                                         bundles.Add(bid);
+                                }
+                            }
+
+                            if (version > 13)
+                            {
+                                int length = reader.ReadInt();
+                                for (int j = 0; j < length; j++)
+                                {
+                                    string superBundleName = reader.ReadNullTerminatedString();
+                                    int sbid = App.AssetManager.GetSuperBundleId(superBundleName);
+                                    if (sbid != -1)
+                                    {
+                                        superBundles.Add(sbid);
+                                    }
                                 }
                             }
 
@@ -405,7 +422,7 @@ namespace ProjectMerger
                             string userData = "";
                             byte[] data = null;
 
-                            if (version > 13)
+                            if (version > 15)
                             {
                                 firstMip = reader.ReadInt();
                                 h32 = reader.ReadInt();
@@ -423,7 +440,7 @@ namespace ProjectMerger
                                 rangeStart = reader.ReadUInt();
                                 rangeEnd = reader.ReadUInt();
 
-                                if (version < 14)
+                                if (version < 16)
                                 {
                                     firstMip = reader.ReadInt();
                                     h32 = reader.ReadInt();
@@ -476,6 +493,7 @@ namespace ProjectMerger
                             if (entry != null)
                             {
                                 entry.AddedBundles.AddRange(bundles);
+                                entry.AddedSuperBundles.AddRange(superBundles);
                                 if (isModified)
                                 {
                                     entry.ModifiedEntry = new ModifiedAssetEntry
@@ -505,7 +523,7 @@ namespace ProjectMerger
 
                         #endregion
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         App.Logger.LogError("Project merging has failed! As a result of this, saving may lead to the current project corrupting. Please be careful!");
                     }
