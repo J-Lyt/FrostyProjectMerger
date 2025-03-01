@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configurations>Developer - Debug;Release - Alpha;Release - Beta;Release - Final</Configurations>
     <Platforms>x64</Platforms>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFrameworks>net48</TargetFrameworks>
     <AssemblyTitle>ProjectMerger</AssemblyTitle>
     <Product>ProjectMerger</Product>
     <Copyright>Copyright ©  2020</Copyright>
@@ -10,15 +10,16 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <UseWPF>true</UseWPF>
     <OutputType>Library</OutputType>
+    <LangVersion>12</LangVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Developer - Debug|x64' ">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Developer - Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Developer\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
   
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release - Alpha|x64' ">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release - Alpha|x64'">
     <OutputPath>bin\Release\Alpha\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
@@ -44,22 +45,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\FrostyControls\FrostyControls.csproj">
+    <ProjectReference Include="..\FrostyToolsuite\FrostyControls\FrostyControls.csproj">
       <Private>false</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\FrostyHash\FrostyHash.vcxproj">
+    <ProjectReference Include="..\FrostyToolsuite\FrostyEditor\FrostyEditor.csproj">
       <Private>false</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\FrostyPlugin\FrostyCore.csproj">
+    <ProjectReference Include="..\FrostyToolsuite\FrostyPlugin\FrostyCore.csproj">
       <Private>false</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\FrostySdk\FrostySdk.csproj">
+    <ProjectReference Include="..\FrostyToolsuite\FrostySdk\FrostySdk.csproj">
       <Private>false</Private>
     </ProjectReference>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy /Y $(TargetPath) $(SolutionDir)$(OutDir)Plugins\" />
+    <Exec Command="xcopy /Y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)$(OutDir)Plugins\&quot;" />
   </Target>
 
 </Project>

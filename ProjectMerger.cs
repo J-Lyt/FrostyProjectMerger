@@ -8,21 +8,23 @@ using Frosty.Core.Controls;
 using Frosty.Core.Windows;
 using FrostySdk;
 using FrostySdk.IO;
-using FrostySdk.Managers;
 using FrostySdk.Resources;
 using FrostySdk.Managers.Entries;
 using Frosty.Hash;
+using System.Reflection;
+using FrostyEditor.Windows;
 
 namespace ProjectMerger
 {
-    public class ProjectMergerMenuExtension : MenuExtension
+    public class ProjectMergerToolbarExtension : ToolbarExtension
     {
-        public override string TopLevelMenuName { get; } = "File";
-        public override string MenuItemName { get; } = "Import from Project";
-        
-        public override RelayCommand MenuItemClicked => new RelayCommand((o) =>
+        public override string Name => "Import Project";
+        public override string Tooltip => "Import from Project";
+        public override string Icon => "FrostyEditor;component/Images/Import.png";
+
+        public override RelayCommand ToolbarItemClicked => new RelayCommand((o) =>
         {
-            FrostyOpenFileDialog openFileDialog = new FrostyOpenFileDialog("Select a project file", "Project File (*.fbproject)|*.fbproject", "FrostyProject");
+            FrostyOpenFileDialog openFileDialog = new FrostyOpenFileDialog("Import Project", "*.fbproject (Frosty Project)|*.fbproject", "FrostyProject");
             if (!openFileDialog.ShowDialog()) return;
             
             FrostyTaskWindow.Show("Importing project...", "", task =>
@@ -214,7 +216,7 @@ namespace ProjectMerger
                             if (!userDecision && !entry.IsDirty && entry.IsModified)
                             {
                                 MessageBoxResult result = FrostyMessageBox.Show(
-                                    "Would you like me to overwrite modified files in this project with those from the imported one?",
+                                    "Do you wish to overwrite modified files in this project with those from the imported one?",
                                     "Project Merger", MessageBoxButton.YesNo);
                                 if (result == MessageBoxResult.Yes)
                                 {
@@ -522,6 +524,12 @@ namespace ProjectMerger
                         #endregion
 
                         #endregion
+
+                        #region Log
+                        var fileName = System.IO.Path.GetFileName(openFileDialog.FileName);
+
+                        FrostyEditor.App.Logger.Log(fileName + " has been merged successfully.");
+                        #endregion
                     }
                     catch (Exception)
                     {
@@ -534,6 +542,13 @@ namespace ProjectMerger
                     }
                 }
             });
+
+            #region Refresh
+            FrostyDataExplorer dataExplorer = typeof(MainWindow).GetField("dataExplorer", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(Application.Current.MainWindow) as FrostyDataExplorer;
+            dataExplorer.RefreshItems();
+
+            typeof(MainWindow).InvokeMember("ResetItemsSources", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.InvokeMethod, null, Application.Current.MainWindow, []);
+            #endregion
         });
     }
 }

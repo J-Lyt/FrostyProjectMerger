@@ -1,6 +1,4 @@
 ﻿using Frosty.Core.Attributes;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
 using ProjectMerger;
@@ -24,5 +22,5 @@ using ProjectMerger;
 
 [assembly: PluginDisplayName("Project Merger")]
 [assembly: PluginAuthor("Y wingpilot2")]
-[assembly: PluginVersion("1.0.0.0")]
-[assembly: RegisterMenuExtension(typeof(ProjectMergerMenuExtension))]
+[assembly: PluginVersion("1.1.0.0")]
+[assembly: RegisterToolbarExtension(typeof(ProjectMergerToolbarExtension))]
