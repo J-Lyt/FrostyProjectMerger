@@ -22,5 +22,5 @@ using ProjectMerger;
 
 [assembly: PluginDisplayName("Project Merger")]
 [assembly: PluginAuthor("Y wingpilot2")]
-[assembly: PluginVersion("1.2.0.0")]
+[assembly: PluginVersion("1.2.1.0")]
 [assembly: RegisterToolbarExtension(typeof(ProjectMergerToolbarExtension))]

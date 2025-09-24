@@ -40,8 +40,10 @@ namespace ProjectMerger
                         if (result == MessageBoxResult.No) return;
                     }
 
+#if !FROSTY_DEVELOPER
                     try
                     {
+#endif
                         #region Useless shit
 
                         uint version = reader.ReadUInt();
@@ -88,6 +90,7 @@ namespace ProjectMerger
                         //Read DEXResource
                         if (version >= 18)
                         {
+                            size = reader.ReadInt();
                             if (size > 0)
                             {
                                 reader.ReadBytes(size);
@@ -550,11 +553,13 @@ namespace ProjectMerger
 
                         FrostyEditor.App.Logger.Log(fileName + " has been merged successfully.");
                         #endregion
+#if !FROSTY_DEVELOPER
                     }
                     catch (Exception)
                     {
                         App.Logger.LogError("Project merging has failed! As a result of this, saving may lead to the current project corrupting. Please be careful!");
                     }
+#endif
 
                     if (reader != null)
                     {
