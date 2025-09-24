@@ -57,6 +57,17 @@ namespace ProjectMerger
                         reader.ReadNullTerminatedString();
                         reader.ReadNullTerminatedString();
                         reader.ReadNullTerminatedString();
+
+                        if (version >= 17)
+                        {
+                            reader.ReadNullTerminatedString();
+                        }
+
+                        if (version >= 18)
+                        {
+                            reader.ReadNullTerminatedString();
+                        }
+                        
                         
                         //Read the images the mod has(pointless but idk how to skip these other then just reading them outright)
                         int size = reader.ReadInt();
@@ -68,6 +79,15 @@ namespace ProjectMerger
                         for (int i = 0; i < 4; i++)
                         {
                             size = reader.ReadInt();
+                            if (size > 0)
+                            {
+                                reader.ReadBytes(size);
+                            }
+                        }
+                        
+                        //Read DEXResource
+                        if (version >= 18)
+                        {
                             if (size > 0)
                             {
                                 reader.ReadBytes(size);
@@ -526,7 +546,7 @@ namespace ProjectMerger
                         #endregion
 
                         #region Log
-                        var fileName = System.IO.Path.GetFileName(openFileDialog.FileName);
+                        var fileName = Path.GetFileName(openFileDialog.FileName);
 
                         FrostyEditor.App.Logger.Log(fileName + " has been merged successfully.");
                         #endregion
@@ -544,8 +564,7 @@ namespace ProjectMerger
             });
 
             #region Refresh
-            FrostyDataExplorer dataExplorer = typeof(MainWindow).GetField("dataExplorer", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(Application.Current.MainWindow) as FrostyDataExplorer;
-            dataExplorer.RefreshItems();
+            App.EditorWindow.DataExplorer.RefreshItems();
 
             typeof(MainWindow).InvokeMember("ResetItemsSources", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.InvokeMethod, null, Application.Current.MainWindow, []);
             #endregion
