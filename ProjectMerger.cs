@@ -275,7 +275,7 @@ namespace ProjectMerger
                                         }
 
                                         // store as a regular ebx
-                                        using (EbxReader ebxReader = EbxReader.CreateProjectReader(new MemoryStream(data)))
+                                        using (EbxReader ebxReader = EbxReader.CreateProjectReader(new MemoryStream(data), App.FileSystemManager))
                                         {
                                             EbxAsset asset = ebxReader.ReadAsset<EbxAsset>();
                                             entry.ModifiedEntry.DataObject = asset;
